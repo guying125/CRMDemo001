@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+	
+<struts>
+	
+	<!-- 设置上传文件的大小，默认2M = 2097152-->
+	<constant name="struts.multipart.maxSize" value="20971520" />
+
+	<package name="crm" extends="struts-default" namespace="/">
+	
+		<!-- 配置  全局  的结果页面 -->
+		<global-results>
+			<result name="login" type="redirect">/login.jsp</result>
+		</global-results>
+		
+		<!-- 配置  客户  的Action 由Struts2框架来管理的方式 -->		
+		<!-- <action name="customer_*" class="com.guying.web.action.CustomerAction" method="{1}"></action> -->
+		
+		<!-- 配置  客户  的Action,如果Action由Spring来管理,class标签上只需要编写ID的值 -->
+		<action name="customer_*" class="customerAction" method="{1}">
+			<result name="page">/jsp/customer/list.jsp</result>	<!-- 请求转发，因为有数据传过来 -->
+			<result name="initAddUI">/jsp/customer/add.jsp</result>
+			<result name="save" type="redirectAction">customer_findByPage.action</result>	<!-- 重定向至 列表显示页面 -->
+			<result name="input">/jsp/error.jsp</result>
+			<result name="delete" type="redirectAction">customer_findByPage.action</result> <!-- 删除成功，还往列表页面跳转 -->
+			<result name="initUpdate" >/jsp/customer/edit.jsp</result> <!-- 只能用请求转发，因为有数据在值栈 -->
+			<result name="update" type="redirectAction">customer_findByPage.action</result> <!-- 修改成功，还往列表页面跳转 -->
+			<result name="count">/jsp/customer/count.jsp</result>
+			
+			<!-- 引入默认的拦截器 -->
+			<interceptor-ref name="defaultStack">
+				<!-- 决定上传文件的类型 -->
+				<param name="fileUpload.allowedExtensions">.jpg,.txt</param>
+				<!-- 单个文件的大小 -->
+				<param name="fileUpload.maximumSize">2097152</param>
+			</interceptor-ref>
+		</action>
+	
+		<!-- 配置  用户  的Action -->
+		<action name="user_*" class="userAction" method="{1}">
+			<result name="loginOK" type="redirect">/index.jsp</result>
+		</action>
+		
+		<!-- 配置  字典  的Action模块 -->
+		<action name="dict_*" class="dictAction" method="{1}">
+			
+		</action>
+		
+		<!-- 配置联系人的模块 -->
+		<action name="linkman_*" class="linkmanAction" method="{1}">
+			<result name="page">/jsp/linkman/list.jsp</result>
+		</action>
+		
+		<!-- 配置客户拜访模块 -->
+		<action name="saleVisit_*" class="saleVisitAction" method="{1}">
+			<result name="toList" type="redirectAction">saleVisit_findByPage.action</result>
+			<result name="page">/jsp/salevisit/list.jsp</result>
+			<result name="initUpdate">/jsp/salevisit/edit.jsp</result>
+			<result name="update" type="redirectAction">saleVisit_findByPage.action</result> <!-- 修改成功，还往列表页面跳转 -->
+			<result name="delete" type="redirectAction">saleVisit_findByPage.action</result> <!-- 删除成功，还往列表页面跳转 -->
+		</action>
+		
+	</package>
+    
+</struts>
+
+
+
+
+
+
+
+
+
+
+
+
+

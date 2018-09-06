@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+    
+<hibernate-mapping>
+	
+	<class name="com.guying.domain.User" table="sys_user">
+		<id name="user_id" column="user_id">
+			<generator class="native"/>
+		</id>
+		
+		<property name="user_code" column="user_code"/>
+		<property name="user_name" column="user_name"/>
+		<property name="user_password" column="user_password"/>
+		<property name="user_state" column="user_state"/>
+	
+		<!-- 一对多的一 -->		<!-- 让用户放弃外键的维护权利 -->
+		<set name="saleVisits" inverse="true">
+			<key column="visit_user_id"></key>
+			<one-to-many class="com.guying.domain.SaleVisit"/>
+		</set>
+	</class>
+	
+</hibernate-mapping>    

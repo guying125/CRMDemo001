@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx.xsd">
+	
+	<!-- 先配置c3p0的连接池 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+		<property name="jdbcUrl" value="jdbc:mysql:///crm_28"></property>
+		<property name="user" value="root"></property>
+		<property name="password" value="1123"></property>
+	</bean>
+	
+	<!-- 直接加载原来hibernate.cfg.xml配置文件中的一些配置 -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<!-- 先加载连接池 -->
+		<property name="dataSource" ref="dataSource" />
+		
+		<!-- 加载方言、可选项 -->
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+			</props>
+		</property>
+		
+		<!-- 引入映射的配置文件 -->
+		<property name="mappingResources">
+			<list>
+				<value>com/guying/domain/User.hbm.xml</value>
+				<value>com/guying/domain/Customer.hbm.xml</value>
+				<value>com/guying/domain/Dict.hbm.xml</value>
+				<value>com/guying/domain/Linkman.hbm.xml</value>
+				<value>com/guying/domain/SaleVisit.hbm.xml</value>
+				
+			</list>
+		</property>
+		
+	</bean>
+	
+	<!-- 先配置平台事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<!-- 开启事务的注解 -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
+	<!--  -->
+	<!-- 配置客户模块 -->
+	<!-- 注意:action的配置,必须是多例的!!! -->
+	<bean id="customerAction" class="com.guying.web.action.CustomerAction" scope="prototype">
+		<property name="customerService" ref="customerService" />
+	</bean>
+	
+	<bean id="customerService" class="com.guying.service.CustomerServiceImpl">
+		<property name="customerDao" ref="customerDao"></property>
+	</bean>
+	
+	<bean id="customerDao" class="com.guying.dao.CustomerDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<!-- 配置用户模块 -->
+	<bean id="userAction" class="com.guying.web.action.UserAction" scope="prototype">
+		<property name="userService" ref="userService" />
+	</bean>
+	
+	<bean id="userService" class="com.guying.service.UserServiceImpl">
+		<property name="userDao" ref="userDao" />
+	</bean>
+	
+	<bean id="userDao" class="com.guying.dao.UserDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<!-- 字典模块 -->
+	<bean id="dictAction" class="com.guying.web.action.DictAction" scope="prototype">
+		<property name="dictService" ref="dictService" />
+	</bean>
+	
+	<bean id="dictService" class="com.guying.service.DictServiceImpl">
+		<property name="dictDao" ref="dictDao" />
+	</bean>
+	
+	<bean id="dictDao" class="com.guying.dao.DictDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<!-- 配置联系人模块 -->
+	<bean id="linkmanAction" class="com.guying.web.action.LinkmanAction" scope="prototype">
+		<property name="linkmanService" ref="linkmanService" />
+	</bean>
+	
+	<bean id="linkmanService" class="com.guying.service.LinkmanServiceImpl">
+		<property name="linkmanDao" ref="linkmanDao" />
+	</bean>
+	
+	<bean id="linkmanDao" class="com.guying.dao.LinkmanDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<!-- 客户拜访模块 -->
+	<bean id="saleVisitAction" class="com.guying.web.action.SaleVisitAction" scope="prototype">
+		<property name="saleVisitService" ref="saleVisitService"></property>
+	</bean>
+	
+	<bean id="saleVisitService" class="com.guying.service.SaleVisitServiceImpl">
+		<property name="saleVisitDao" ref="saleVisitDao"></property>
+	</bean>
+	
+	<bean id="saleVisitDao" class="com.guying.dao.SaleVisitDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	
+	
+	<!-- 配置模板类 -->
+	<!-- <bean id="hibernateTemplate" class="org.springframework.orm.hibernate5.HibernateTemplate">
+		配置底层操作 Session
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean> -->
+	
+</beans>
+
+
+
+
+
+
+
+
+
+
+
+
